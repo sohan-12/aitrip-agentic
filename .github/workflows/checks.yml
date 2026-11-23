@@ -1,0 +1,53 @@
+name: Phase 1 checks
+on: [push, pull_request]
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: aitrip
+          POSTGRES_PASSWORD: ci-only
+          POSTGRES_USER: aitrip
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U aitrip -d aitrip"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install and test the API
+        working-directory: backend
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install -r requirements-dev.txt
+          .venv/bin/python -m pip check
+          .venv/bin/python -m pytest -q
+      - name: Exercise the PostgreSQL migration
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql+psycopg://aitrip:ci-only@localhost:5432/aitrip
+        run: |
+          .venv/bin/alembic upgrade head
+          .venv/bin/alembic check
+          .venv/bin/alembic downgrade base
+      - name: Build and test the client
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+          npm test
+          npx playwright install --with-deps chromium
+          npm run test:e2e

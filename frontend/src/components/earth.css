@@ -1,0 +1,82 @@
+.earth {
+  isolation: isolate;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  min-width: 0;
+  container-type: size;
+}
+.earth-stage, .earth-stars { position: absolute; inset: 0; }
+.earth-stage {
+  display: grid;
+  place-items: center;
+  touch-action: pan-y;
+  outline-offset: -3px;
+}
+.earth-stage[tabindex] { cursor: grab; }
+.earth-stage[tabindex]:active { cursor: grabbing; }
+.earth-stage:focus-visible, .earth-tools button:focus-visible { outline: 2px solid #73edf7; }
+.earth-stage:before {
+  content: "";
+  position: absolute;
+  width: 88cqmin;
+  height: 88cqmin;
+  border-radius: 50%;
+  box-shadow: -9px -6px 48px 0 #2275a120, 2px 5px 60px 4px #1682aa0d;
+  pointer-events: none;
+}
+.earth-poster {
+  display: block;
+  position: absolute;
+  width: 89cqmin;
+  height: 89cqmin;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+.earth-poster-hidden { visibility: hidden; }
+.earth-canvas { position: absolute !important; inset: 0; }
+.earth-canvas canvas { display: block; }
+.earth-stars {
+  pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 8% 16%, #becbdf 50%, transparent),
+    radial-gradient(1.5px 1.5px at 15% 65%, #a7cbd1 45%, transparent),
+    radial-gradient(1px 1px at 92% 48%, #d3edf9 50%, transparent),
+    radial-gradient(1px 1px at 82% 10%, #98adba 50%, transparent),
+    radial-gradient(1px 1px at 75% 89%, #b9cbd9 50%, transparent);
+  background-size: 167px 139px, 233px 211px, 283px 177px, 317px 251px, 233px 257px;
+  opacity: .5;
+  mask-image: radial-gradient(ellipse, black 50%, transparent 86%);
+}
+.earth-tools {
+  position: absolute;
+  z-index: 2;
+  right: max(4%, 10px);
+  bottom: max(2%, 8px);
+  display: flex;
+  gap: 1px;
+  padding: 3px;
+  border-radius: 24px;
+  background: #0c171ccf;
+  border: 1px solid #b8deed30;
+  backdrop-filter: blur(10px);
+}
+.earth-tools button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  color: #cadde4;
+  background: transparent;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.earth-tools button:hover { background: #143139; color: #80edf7; }
+.earth-tools button:disabled { opacity: .35; cursor: default; }
+.earth-tools svg { width: 14px; height: 14px; }
+@media (pointer: coarse) {
+  .earth-tools button { width: 42px; height: 42px; }
+}
